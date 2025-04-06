@@ -1,60 +1,71 @@
-// Author:  Wendy-Beth Minton
-// Class:   3810 Database
-// Lab:     Introduction to Database Connectivity
-
-// This is an example of a presentation layer. Notice it includes all the needed prompts needed.
-// This class also happens to have the main method. It is common to have the entry to a program 
-// exist in the presentation layer, and actually each application tends to have its own entry point,
-// if the program/product has multiple applications. 
-
 import java.util.Scanner;
 
-public class IntroToPresentationLayer
-{
-    public static void main(String[] args)
-    {
-        Scanner userInformation = new Scanner(System.in);
+public class IntroToPresentationLayer {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("Enter username and password:");
-        // String input
-        String userName = userInformation.nextLine();
-        String password = userInformation.nextLine();
+        String userName = scanner.nextLine();
+        String password = scanner.nextLine();
 
-        // Let's start simple. How do we connect to and access a database?
-        // Well, the presentation layer can't do it. We need an instance of the DAL!
         IntroToDAL dal = new IntroToDAL();
+        DALVideoGames vgDal = new DALVideoGames();
 
-        // Now we can use the dal object, so let's print
-        // out some rows from the Meal table, in the MealPlanningDatabase.
-        // We need to pass the dal method everything it needs to run a query, including
-        // the database name, the query, and the user's sql credentials.
-        if (dal.TryExecutingAQuery("MealPlanning", "Select * from Meal", userName, password))
-        {
-            System.out.println("Successfully connected to the database");
-        }
-        else
-        {
-            System.out.println("Failed to connect to the database");
-        }
+        while (true) {
+            System.out.println("\nSelect an option:");
+            System.out.println("1. Query MealPlanning database");
+            System.out.println("2. Query Arcade or VideoGameSystems database");
+            System.out.println("3. Call GetRecipes stored procedure");
+            System.out.println("4. Run statement method (VideoGameDAL)");
+            System.out.println("5. Run prepared statement method (VideoGameDAL)");
+            System.out.println("6. Run callable statement method (VideoGameDAL)");
+            System.out.println("7. Exit");
 
-        // Let's try calling a stored procedure, and let's start simple.
-        // I made a new stored procedure that just returns everything in the 
-        // Recipe table, called GetRecipes. No parameters, just a simple call.
-        if (dal.TryExecutingAStoredProcedure("MealPlanning", userName, password))
-        {
-            System.out.println("Successfully ran a stored procedure");
-        }
-        else
-        {
-            System.out.println("Failed to run a stored procedure");
-        }
+            int choice = Integer.parseInt(scanner.nextLine());
 
-        if(dal.TryExecutingAStoredProcedureWithParam("MealPlanning", userName, password, "Maple Chicken", "Dude Diet", 4, true, "www.dudediet.com"))
-        {
-            System.out.println("Success ran stored procedure with params");
+            switch (choice) {
+                case 1:
+                    if (dal.TryExecutingAQuery("MealPlanning", "SELECT * FROM Meal", userName, password)) {
+                        System.out.println("Successfully connected and queried MealPlanning database.");
+                    } else {
+                        System.out.println("Failed to query MealPlanning database.");
+                    }
+                    break;
+
+                case 2:
+                    if (dal.TryExecutingAQuery("VideoGameSystems", "SELECT * FROM Games", userName, password)) {
+                        System.out.println("Successfully queried VideoGameSystems database.");
+                    } else {
+                        System.out.println("Failed to query VideoGameSystems database.");
+                    }
+                    break;
+
+                case 3:
+                    if (dal.TryExecutingAStoredProcedure("MealPlanning", userName, password)) {
+                        System.out.println("Successfully called GetRecipes stored procedure.");
+                    } else {
+                        System.out.println("Failed to call stored procedure.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("Running statement method (getAllGames):");
+                    vgDal.getAllGames();
+                    break;
+
+                case 5:
+                    System.out.print("Enter a platform (e.g., PS5, Xbox, Switch): ");
+                    String platform = scanner.nextLine();
+                    System.out.println("Running prepared statement method (getGamesByPlatform):");
+                    vgDal.getGamesByPlatform(platform);
+                    break;
+
+                case 6:
+                    System.out.println("Exiting...");
+                    return;
+
+                default:
+                    System.out.println("Invalid option, try again.");
+            }
         }
-        else
-        {
-            System.out.println("Failed to run stored procedure with params");
-        }
-    }  
+    }
 }
